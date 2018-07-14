@@ -9,7 +9,7 @@ def hiddenScore(X, V, bH, g):
 def nnScore(X, w, V, bH, g):
     return hiddenScore(X, V, bH, g).dot(w)
 
-def ocnn_obj(theta, X, nu, D, K, V, bH, g, dG):
+def ocnn_frozenvb_obj(theta, X, nu, D, K, V, bH, g, dG):
     
     w = theta[:K]
     r = theta[-1]
@@ -21,7 +21,7 @@ def ocnn_obj(theta, X, nu, D, K, V, bH, g, dG):
     
     return term1 + term2 + term3 + term4
 
-def ocnn_grad(theta, X, nu, D, K, V, bH, g, dG):
+def ocnn_frozenvb_grad(theta, X, nu, D, K, V, bH, g, dG):
     
     N = X.shape[0]
     w = theta[:K]
@@ -61,13 +61,13 @@ class MyOCNN_FrozenVB:
         theta0 = np.random.normal(0, 1, K + 1)
         #theta0 = resEXP.x
 
-        print('Gradient error: %s' % check_grad(ocnn_obj, ocnn_grad, theta0, XTr, self.nu, D, K, self.R, self.bH, self.g, self.dG))
-        resNN = minimize(ocnn_obj, theta0, 
-                         jac     = ocnn_grad, 
+        print('Gradient error: %s' % check_grad(ocnn_frozenvb_obj, ocnn_frozenvb_grad, theta0, XTr, self.nu, D, K, self.R, self.bH, self.g, self.dG))
+        resNN = minimize(ocnn_frozenvb_obj, theta0, 
+                         jac     = ocnn_frozenvb_grad, 
                          args    = (XTr, self.nu, D, K, self.R, self.bH, self.g, self.dG),
                          method  = 'L-BFGS-B',                
                          options = {'gtol': 1e-8, 'disp': True, 'maxiter' : 50000, 'maxfun' : 10000})
-        print('Gradient error: %s' % check_grad(ocnn_obj, ocnn_grad, resNN.x, XTr, self.nu, D, K, self.R, self.bH, self.g, self.dG))
+        print('Gradient error: %s' % check_grad(ocnn_frozenvb_obj, ocnn_frozenvb_grad, resNN.x, XTr, self.nu, D, K, self.R, self.bH, self.g, self.dG))
 
         self.w = resNN.x[:-1]
         self.r = resNN.x[-1]
