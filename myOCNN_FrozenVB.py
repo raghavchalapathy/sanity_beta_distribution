@@ -54,11 +54,13 @@ class MyOCNN_FrozenVB:
         self.g  = g
         self.dG = dG
 
-    def fit(self, XTr):
+    def fit(self, XTr, theta0 = None):
 
         D = XTr.shape[1]
         K = self.R.shape[1]
-        theta0 = np.random.normal(0, 1, K + 1)
+
+        if theta0 is None:
+            theta0 = np.random.normal(0, 1, K + 1)
         #theta0 = resEXP.x
 
         print('Gradient error: %s' % check_grad(ocnn_frozenvb_obj, ocnn_frozenvb_grad, theta0, XTr, self.nu, D, K, self.R, self.bH, self.g, self.dG))
